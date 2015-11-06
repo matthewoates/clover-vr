@@ -132,16 +132,16 @@
 						var year = store1.per_day[i][j][2].getFullYear();
 						switch(year) {
 							case 2013:
-								color_for_week = 0xD87093;
+								color_for_week = 0x3F51B5;
 								break;
 							case 2014:
-								color_for_week = 0xEEE8AA;
+								color_for_week = 0x4CAF50;
 								break;
 							case 2015:
-								color_for_week = 0xB0E0E6;
-								break; 
-							default: 
-								color_for_week = 0xF0FFFF;
+								color_for_week = 0xFFC107;
+								break;
+							default:
+								color_for_week = 0x9C27B0;
 								break;
 						}
 
@@ -281,7 +281,7 @@
 
 						INTERSECTED = intersects[ 0 ].object;
 						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-						INTERSECTED.material.emissive.setHex( 0xff0000 );   
+						INTERSECTED.material.emissive.setHex( 0xff0000 );
 
 						// var canvas = document.getElementById('mycanvas');
 						// var ctx = canvas.getContext('2d');
