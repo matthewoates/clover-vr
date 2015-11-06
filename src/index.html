@@ -128,8 +128,25 @@
 
 				var zpos = 0;
 				for(var j = 0; j < store1.per_day[1].length; j++) {
-					var color_for_week = Math.random() * 0xFFFFFF;
+					var color_for_week;
+
 					for(var i = 1; i < 8; i++) {
+						var year = store1.per_day[i][j][2].getFullYear();
+						switch(year) {
+							case 2013:
+								color_for_week = 0x3F51B5;
+								break;
+							case 2014:
+								color_for_week = 0x4CAF50;
+								break;
+							case 2015:
+								color_for_week = 0xFFC107;
+								break;
+							default:
+								color_for_week = 0x9C27B0;
+								break;
+						}
+
 						var object_height = store1.per_day[i][j][3]/50;
 						var geometry = new THREE.BoxGeometry( graph_box_width, object_height, graph_box_length );
 						var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color_for_week } ) );
@@ -141,7 +158,7 @@
 						scene.add(object);
 						cubes.push(object);
 					}
-					zpos-= 1.5 * graph_box_length;
+					zpos-= graph_box_length;
 				}
 
 				// var textShapes = THREE.FontUtils.generateShapes( "text", {transparent: false, opacity: 1.0});
@@ -213,7 +230,7 @@
 				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
 
 				var material = new THREE.MeshFaceMaterial( [
-					new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, overdraw: 0.5 } ),
+					new THREE.MeshBasicMaterial( { color: 0x76FF03, overdraw: 0.5 } ),
 					new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
 				] );
 
@@ -222,7 +239,7 @@
 				text.position.x = x + centerOffset;
 				text.position.y = y + 20;
 				text.position.z = z;
-				text.rotation.y = camera.rotation.y; 
+				text.rotation.y = camera.rotation.y;
 				text.rotation.x = camera.rotation.x;
 				text.rotation.z = camera.rotation.z;
 				// text.rotation.x = 0;
@@ -276,8 +293,9 @@
 
 						INTERSECTED = intersects[ 0 ].object;
 						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-						INTERSECTED.material.emissive.setHex( 0xff0000 );   
+						INTERSECTED.material.emissive.setHex( 0xff0000 );
 						intersected_text = textGenerate(INTERSECTED.position.x, INTERSECTED.position.y * 2, INTERSECTED.position.z, INTERSECTED.date, INTERSECTED.sales);
+
 						// var canvas = document.getElementById('mycanvas');
 						// var ctx = canvas.getContext('2d');
 						// ctx.fillText("text", 50, 50);
@@ -288,7 +306,7 @@
 					if ( INTERSECTED ) {
 						INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
 						scene.remove(intersected_text);
-					} 
+					}
 
 					INTERSECTED = null;
 
