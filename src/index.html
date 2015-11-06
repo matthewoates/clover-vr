@@ -56,8 +56,8 @@
 		<script src="../data/train.js"></script>
 		<script src="js/movement.js"></script>
 		<script src="js/leapmotionincludes.js"></script>
+		<script src="js/leap-plugins.js"></script>
 		<script src="js/leapmotion.js"></script>
-		<script src="js/bonehand.js"></script>
 		<script>
 
 			var container, stats;
@@ -267,7 +267,7 @@
 
 						INTERSECTED = intersects[ 0 ].object;
 						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-						INTERSECTED.material.emissive.setHex( 0xff0000 );   
+						INTERSECTED.material.emissive.setHex( 0xff0000 );
 
 						// var canvas = document.getElementById('mycanvas');
 						// var ctx = canvas.getContext('2d');
