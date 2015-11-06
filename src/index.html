@@ -205,8 +205,8 @@
 					});
 
 				}
-				groups.push(group);
 				var group = constructGraphGroup((store_selected - 1) * 400, store1.per_day);
+				groups.push(group);
 				group.add(storeGenerate(400 * store_selected, store_selected ));
 				scene.add(group);
 

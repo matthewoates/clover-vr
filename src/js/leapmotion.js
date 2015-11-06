@@ -2,7 +2,8 @@
 // better than the way it is done here.
 // https://developer.leapmotion.com/gallery/bone-hands
 // If you prefer to see exactly how it all works, read on..
-
+  var intersectedBox = null;
+  var previousFrame = null;
           var rotation = new THREE.Matrix3();
           rotation.set(1,0,0,0,0,-1,0,-1,0);
   var colors = [0xff0000, 0x00ff00, 0x0000ff];
@@ -11,23 +12,37 @@
       //new THREE.Euler(0, 0, 0)
   );
   var jointDefaultColor = 0x0088ce;
-  Leap.loop({background: true}, {
+  var controller = Leap.loop({background: true}, {
     hand: function (hand) {
-      console.log('hand()');
-      console.log(hand.sphereRadius);
+      // console.log('hand()');
+      // console.log(hand.sphereRadius);
       var jointColor = jointDefaultColor;
       if(hand.sphereRadius < 40 /* magic number */ ) {
+        var previousFrame = controller.frame(1);
         jointColor = 0xff0000;
         var palmPosition = hand.palmPosition;
         var cameraPosition = camera.position;
-        var intersectedBox = null;
+        intersectedBox = null;
+        // console.log(groups);
+        var currentPosition = new THREE.Vector3(-palmPosition[0] + cameraPosition.x, -palmPosition[2] + cameraPosition.y, -palmPosition[1] + cameraPosition.z);
+        // console.log(currentPosition);
         groups.forEach(function(item, i) {
-          var itemBoundingBox = item.boundingBox;
-          if(itemBoundingBox.min.x <= palmPosition.x + cameraPosition.x) {
-            
-          }
-        })
+          var itemBoundingBox = new THREE.Box3().setFromObject(item);
+          // console.log(itemBoundingBox);
+          if(itemBoundingBox.containsPoint(currentPosition)) {
+            // console.log('collided');
+            intersectedBox = item;
+          } 
+        });
+        var translation = hand.translation(previousFrame);
+        if(intersectedBox !== null) {
+          // console.log('translation ' + translation);
+          intersectedBox.translateX(-translation[0]);
+          intersectedBox.translateY(-translation[2]);
+          intersectedBox.translateZ(-translation[1]);
+        }
       }
+
       hand.fingers.forEach(function (finger) {
 
         // This is the meat of the example - Positioning `the cylinders on every frame:
@@ -127,7 +142,7 @@
   .use('handHold')
   .use('handEntry')
   .on('handFound', function(hand){
-    console.log('hand found!');
+    // console.log('hand found!');
 
     hand.fingers.forEach(function (finger) {
 
