@@ -205,9 +205,9 @@
 					});
 
 				}
-				storeGenerate(400 * (store_selected - 1), store_selected );
 				groups.push(group);
 				var group = constructGraphGroup((store_selected - 1) * 400, store1.per_day);
+				group.add(storeGenerate(400 * store_selected, store_selected ));
 				scene.add(group);
 
 			}
@@ -261,7 +261,7 @@
 
 
 			function storeGenerate(x, store_selected) {
-				var text3d = new THREE.TextGeometry( "Store " + store_selected, {
+				var text3d = new THREE.TextGeometry( "Store " + (store_selected+1), {
 					size: 15,
 					height: 10,
 					curveSegments: 2,
@@ -277,24 +277,23 @@
 					new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
 				] );
 
-				monthText = new THREE.Mesh( text3d, material );
+				storeText = new THREE.Mesh( text3d, material );
 
-				monthText.position.x = centerOffset + x + 100;
-				monthText.position.y = -20;
-				monthText.position.z = 0;
-				monthText.rotation.y = camera.rotation.y;
-				monthText.rotation.x = camera.rotation.x;
-				monthText.rotation.z = camera.rotation.z;
+				storeText.position.x = centerOffset + x + 100;
+				storeText.position.y = -20;
+				storeText.position.z = 0;
+				storeText.rotation.y = camera.rotation.y;
+				storeText.rotation.x = camera.rotation.x;
+				storeText.rotation.z = camera.rotation.z;
 
-				monthGroup = new THREE.Group();
-				monthGroup.add( monthText );
-				scene.add( monthGroup );
+				return storeText;
 			}
 
 			function constructGraphGroup(xOffset, storelist) {
 				var zpos = 0;
 				var group = new THREE.Object3D();
 				for(var j = 0; j < storelist[1].length; j++) {
+					console.log(storelist[j]);
 					var color_for_week;
 
 					for(var i = 1; i < 8; i++) {
