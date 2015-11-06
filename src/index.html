@@ -99,27 +99,42 @@
 				light.position.set( 1, 1, 1 ).normalize();
 				scene.add( light );
 
-				var geometry = new THREE.BoxGeometry( 20, 20, 20 );
+				var store1_dates_unparsed = data_arr.filter(function(entry) { return entry[0] == 1});
+				var store1 = {
+					all: store1_dates_unparsed.map(function(obj) {
+						var date_parsed = obj;
+						date_parsed[2] = new Date(obj[2]);
+						return date_parsed;
+					}),
+					per_day: []
+				};
 
-				for ( var i = 0; i < 2000; i ++ ) {
 
-					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
+				var graph_box_width = 20;
+				var graph_box_length = 20;
+				var week_colors = {}
+				for(var i = 1; i < 8; i++) {
+					store1.per_day[i] = store1.all.filter(function(entry) { return entry[1] == i});
+					store1.per_day[i].sort(function(a,b) {
+						return a[2] - b[2];
+					});
 
-					object.position.x = Math.random() * 800 - 400;
-					object.position.y = Math.random() * 800 - 400;
-					object.position.z = Math.random() * 800 - 400;
+				}
 
-					object.rotation.x = Math.random() * 2 * Math.PI;
-					object.rotation.y = Math.random() * 2 * Math.PI;
-					object.rotation.z = Math.random() * 2 * Math.PI;
-
-					object.scale.x = Math.random() + 0.5;
-					object.scale.y = Math.random() + 0.5;
-					object.scale.z = Math.random() + 0.5;
-
-					scene.add( object );
-					cubes.push( object );
-
+				var zpos = 0;
+				for(var j = 0; j < store1.per_day[1].length; j++) {
+					var color_for_week = Math.random() * 0xFFFFFF;
+					for(var i = 1; i < 8; i++) {
+						var object_height = store1.per_day[i][j][3]/50;
+						var geometry = new THREE.BoxGeometry( graph_box_width, object_height, graph_box_length );
+						var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color_for_week } ) );
+						object.position.x = (i-1) * graph_box_width;
+						object.position.y = object_height/2;
+						object.position.z = zpos;
+						scene.add(object);
+						cubes.push(object);
+					}
+					zpos+= 1.5 * graph_box_length;
 				}
 
 				raycaster = new THREE.Raycaster();
@@ -160,7 +175,7 @@
 				stats.domElement.style.top = '0px';
 				container.appendChild( stats.domElement );
 
-				//
+
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
@@ -180,9 +195,9 @@
 			function animate() {
 
 				requestAnimationFrame( animate );
-				camera.position.y += perspective_movement.y_velocity;
 				camera.position.x += perspective_movement.x_velocity;
-
+				camera.position.y += perspective_movement.y_velocity;
+				camera.position.z += perspective_movement.z_velocity;
 				render();
 				stats.update();
 
