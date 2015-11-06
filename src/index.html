@@ -134,7 +134,7 @@
 						scene.add(object);
 						cubes.push(object);
 					}
-					zpos+= 1.5 * graph_box_length;
+					zpos-= 1.5 * graph_box_length;
 				}
 
 				raycaster = new THREE.Raycaster();
@@ -152,6 +152,7 @@
 				}
 
 				vrControls = new THREE.VRControls( camera );
+				vrControls.scale = 1000;
 				vrEffect = new THREE.VREffect( renderer, function ( error ) {
 
 					fullScreenButton.innerHTML = error;
