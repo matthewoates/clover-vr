@@ -3,16 +3,22 @@
 // https://developer.leapmotion.com/gallery/bone-hands
 // If you prefer to see exactly how it all works, read on..
 
+          var rotation = new THREE.Matrix3();
+          rotation.set(1,0,0,0,0,-1,0,-1,0);
   var colors = [0xff0000, 0x00ff00, 0x0000ff];
   var baseBoneRotation = (new THREE.Quaternion).setFromEuler(
       new THREE.Euler(Math.PI / 2, 0, 0)
       //new THREE.Euler(0, 0, 0)
   );
-
+  var jointDefaultColor = 0x0088ce;
   Leap.loop({background: true}, {
     hand: function (hand) {
       console.log('hand()');
-
+      console.log(hand.sphereRadius);
+      var jointColor = jointDefaultColor;
+      if(hand.sphereRadius < 40 /* magic number */ ) {
+        jointColor = 0xff0000;
+      }
       hand.fingers.forEach(function (finger) {
 
         // This is the meat of the example - Positioning `the cylinders on every frame:
@@ -26,6 +32,13 @@
           );
 
           mesh.quaternion.multiply(baseBoneRotation);
+          swapAxes(mesh.position);
+
+          // swapAxes(mesh.rotation);
+          mesh.position.x += camera.position.x;
+          mesh.position.y += camera.position.y;
+          mesh.position.z += camera.position.z;
+
         });
 
         finger.data('jointMeshes').forEach(function(mesh, i){
@@ -38,7 +51,11 @@
             bone = finger.bones[i-1];
             mesh.position.fromArray(bone.nextJoint);
           }
-
+          mesh.material.color.setHex(jointColor);
+          swapAxes(mesh.position);
+          mesh.position.x += camera.position.x;
+          mesh.position.y += camera.position.y;
+          mesh.position.z += camera.position.z;
         });
 
       });
@@ -52,8 +69,43 @@
         (new THREE.Matrix4).fromArray( hand.arm.matrix() )
       );
 
+
+
       armMesh.quaternion.multiply(baseBoneRotation);
 
+      swapAxes(armMesh);
+
+      // we want to rotate armMesh by some angle
+
+      // var G = {
+      //   // dT:{type:"f" , value:0},
+      //   // time:{type:"f" , value:0},
+      //   // t_matcap:{ type:"t" , value: matcapDark },
+      //   // t_blood:{ type:"t" , value: matcapDark },
+      //   // fogColor:{ type:"v3" , value: new THREE.Vector3() },
+      //   // t_audio:{type:"t",value:null},
+      //   fingers:{ type:"v3", value:[] }
+      // }
+
+      // for( var i = 0; i < 25; i++ ){
+      //     var r = G.fingers.value[i];
+      //     var bI =  i % 5 ;                     // Bone index
+      //     var fI = Math.floor( i / 5 );     // finger index
+      //     var p = leapToScene( frame , frame.hands[0].fingers[fI].positions[bI] );
+      //     if( VR == true ){
+      //         // z is y || x is x ||  y is -z
+      //         tv1.set( -p[0] , -p[2] , -p[1] );
+      //         r.copy( camera.position );
+      //         tv1.applyQuaternion( camera.quaternion );
+      //         r.add( tv1 );
+      //     }
+      //     else{ 
+      //       r.copy( camera.position );
+      //       tv1.set( p[0] , p[1] -.3 , p[2] - .3 );
+      //       r.add( tv1 );
+      //     }
+
+      // } // stuff copy pasted from https://github.com/cabbibo/RainbowMembrane/blob/gh-pages/index.html
       armMesh.scale.x = hand.arm.width / 2;
       armMesh.scale.z = hand.arm.width / 4;
 
@@ -84,8 +136,8 @@
         );
 
         boneMesh.material.color.setHex(0xffffff);
-        scene.add(boneMesh);
-        boneMeshes.push(boneMesh);
+        // scene.add(boneMesh);
+        // boneMeshes.push(boneMesh);
       });
 
       for (var i = 0; i < finger.bones.length + 1; i++) {
@@ -116,7 +168,7 @@
 
       armMesh.material.color.setHex(0xffffff);
 
-      scene.add(armMesh);
+      // scene.add(armMesh);
 
       hand.data('armMesh', armMesh);
 
@@ -153,3 +205,23 @@
 
   })
   .connect();
+
+    function leapToScene( frame , position  ){
+    var p =  position;  
+    return [ 
+      p[0] * .001,
+      p[1] * .001,
+      p[2] * .001
+    ]
+  }
+
+function swapAxes(a) {
+  var previousx = a.x,
+      previousy = a.y,
+      previousz = a.z;
+
+  a.x = -previousx;
+  a.y = -previousz;
+  a.z = -previousy;
+
+}
