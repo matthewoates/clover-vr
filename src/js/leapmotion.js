@@ -18,6 +18,15 @@
       var jointColor = jointDefaultColor;
       if(hand.sphereRadius < 40 /* magic number */ ) {
         jointColor = 0xff0000;
+        var palmPosition = hand.palmPosition;
+        var cameraPosition = camera.position;
+        var intersectedBox = null;
+        groups.forEach(function(item, i) {
+          var itemBoundingBox = item.boundingBox;
+          if(itemBoundingBox.min.x <= palmPosition.x + cameraPosition.x) {
+            
+          }
+        })
       }
       hand.fingers.forEach(function (finger) {
 
