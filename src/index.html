@@ -50,13 +50,15 @@
 		<script src="js/VREffect.js"></script>
 		<script src="js/VRControls.js"></script>
 		<script src="js/stats.min.js"></script>
-
+		<script src="../data/train.js"></script>
+		<script src="js/movement.js"></script>
 		<script>
 
 			var container, stats;
 			var camera, scene, raycaster, renderer;
 			var vrEffect;
 			var vrControls;
+
 
 			var cubes = [];
 			var INTERSECTED;
@@ -178,6 +180,8 @@
 			function animate() {
 
 				requestAnimationFrame( animate );
+				camera.position.y += perspective_movement.y_velocity;
+				camera.position.x += perspective_movement.x_velocity;
 
 				render();
 				stats.update();
