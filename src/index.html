@@ -55,6 +55,7 @@
 		<script src="js/helvetiker_regular.typeface.js"></script>
 		<script src="../data/train.js"></script>
 		<script src="js/movement.js"></script>
+		<script src="js/skybox.js"></script>
 		<script>
 
 			Date.prototype.formatMMDDYYYY = function(){ return (this.getMonth() + 1) + "/" + this.getDate() + "/" + this.getFullYear(); }
@@ -99,6 +100,7 @@
 					} )
 				);
 				scene.add( crosshair );
+				prepareSkybox();
 
 				var light = new THREE.DirectionalLight( 0xffffff, 1 );
 				light.position.set( 1, 1, 1 ).normalize();
