@@ -100,6 +100,20 @@
 				);
 				scene.add( crosshair );
 
+				var month_selected = 0;
+				var months = [];
+
+				var month_Geometry = new THREE.BoxGeometry(20,20,20);
+				for(var i = 0; i < 12; i++) {
+					var obj = new THREE.Mesh(month_Geometry, new THREE.MeshLambertMaterial( {color: 0xC0C0C0}));
+					obj.position.x = 50 * i;
+					obj.position.y = 400;
+					obj.position.z = 200;
+					monthGenerate(50 * i, i);
+					scene.add(obj);
+					months.push(obj);
+				}
+
 				var light = new THREE.DirectionalLight( 0xffffff, 1 );
 				light.position.set( 1, 1, 1 ).normalize();
 				scene.add( light );
@@ -109,16 +123,24 @@
 						return date_parsed;
 					});
 
+				var store_selected = 1;
+
+				for(var i = 0; i < 10; i++) {
+					storeGenerate(500 * i, i + 1);
+					scene.add(obj);
+				}				
+
 				var store1 = {
 					all: data_arr.filter(function(entry) { 
-					return entry[0] == 1 && entry[2].getMonth() == 0 }),
+
+					return (entry[0] == 1 || entry[0] == 2 || entry[0] == 3 || entry[0] == 4 || entry[0] == 5 || entry[0] == 6 || entry[0] == 7 || entry[0] == 8 || entry[0] == 9 || entry[0] == 10) && entry[2].getMonth() == month_selected }),
 					per_day: []
 				};
 
 
 				var graph_box_width = 20;
 				var graph_box_length = 20;
-				var week_colors = {}
+				var week_colors = {};
 				for(var i = 1; i < 8; i++) {
 					store1.per_day[i] = store1.all.filter(function(entry) { return entry[1] == i});
 					store1.per_day[i].sort(function(a,b) {
@@ -211,6 +233,85 @@
 
 				window.addEventListener( 'resize', onWindowResize, false );
 
+			}
+
+			function monthGenerate(x, month_selected) {
+				var month_name;
+				switch(month_selected){
+					case 0: month_name = "Jan"; break;
+					case 1: month_name = "Feb"; break;
+					case 2: month_name = "Mar"; break;
+					case 3: month_name = "Apr"; break;
+					case 4: month_name = "May"; break;
+					case 5: month_name = "Jun"; break;
+					case 6: month_name = "Jul"; break;
+					case 7: month_name = "Aug"; break;
+					case 8: month_name = "Sep"; break;
+					case 9: month_name = "Oct"; break;
+					case 10: month_name = "Nov"; break;
+					case 11: month_name = "Dec"; break;
+					default: break;
+				}
+				var text3d = new THREE.TextGeometry( month_name, {
+					size: 15,
+					height: 10,
+					curveSegments: 2,
+					//weight: "bold",
+					font: "helvetiker"
+				});
+
+				text3d.computeBoundingBox();
+				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+
+				var material = new THREE.MeshFaceMaterial( [
+					new THREE.MeshBasicMaterial( { color: 0x76FF03, overdraw: 0.5 } ),
+					new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
+				] );
+
+				monthText = new THREE.Mesh( text3d, material );
+
+				monthText.position.x = centerOffset + x;
+				monthText.position.y = 430;
+				monthText.position.z = 200;
+				monthText.rotation.y = camera.rotation.y;
+				monthText.rotation.x = camera.rotation.x;
+				monthText.rotation.z = camera.rotation.z;
+
+				monthGroup = new THREE.Group();
+				monthGroup.add( monthText );
+				scene.add( monthGroup );
+			}
+
+
+			function storeGenerate(x, store_selected) {
+				var text3d = new THREE.TextGeometry( "Store " + store_selected, {
+					size: 15,
+					height: 10,
+					curveSegments: 2,
+					//weight: "bold",
+					font: "helvetiker"
+				});
+
+				text3d.computeBoundingBox();
+				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+
+				var material = new THREE.MeshFaceMaterial( [
+					new THREE.MeshBasicMaterial( { color: 0x76FF03, overdraw: 0.5 } ),
+					new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
+				] );
+
+				monthText = new THREE.Mesh( text3d, material );
+
+				monthText.position.x = centerOffset + x + 100;
+				monthText.position.y = -20;
+				monthText.position.z = 0;
+				monthText.rotation.y = camera.rotation.y;
+				monthText.rotation.x = camera.rotation.x;
+				monthText.rotation.z = camera.rotation.z;
+
+				monthGroup = new THREE.Group();
+				monthGroup.add( monthText );
+				scene.add( monthGroup );
 			}
 
 			function textGenerate(x, y, z, theText, theSales) {
