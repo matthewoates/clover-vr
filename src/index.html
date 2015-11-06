@@ -137,7 +137,7 @@
 						scene.add(object);
 						cubes.push(object);
 					}
-					zpos+= 1.5 * graph_box_length;
+					zpos-= 1.5 * graph_box_length;
 				}
 
 				// var textShapes = THREE.FontUtils.generateShapes( "text", {transparent: false, opacity: 1.0});
@@ -196,6 +196,7 @@
 				}
 
 				vrControls = new THREE.VRControls( camera );
+				vrControls.scale = 1000;
 				vrEffect = new THREE.VREffect( renderer, function ( error ) {
 
 					fullScreenButton.innerHTML = error;
