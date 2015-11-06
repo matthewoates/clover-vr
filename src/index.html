@@ -133,29 +133,9 @@
 				var store_selected = 1;
 
 				for(var i = 0; i < 10; i++) {
-					storeGenerate(500 * i, i + 1);
-					scene.add(obj);
+					selectStore(i, month_selected);
 				}				
 
-				var store1 = {
-					all: data_arr.filter(function(entry) { 
-
-					return (entry[0] == 1 || entry[0] == 2 || entry[0] == 3 || entry[0] == 4 || entry[0] == 5 || entry[0] == 6 || entry[0] == 7 || entry[0] == 8 || entry[0] == 9 || entry[0] == 10) && entry[2].getMonth() == month_selected }),
-					per_day: []
-				};
-
-
-				var week_colors = {};
-				for(var i = 1; i < 8; i++) {
-					store1.per_day[i] = store1.all.filter(function(entry) { return entry[1] == i});
-					store1.per_day[i].sort(function(a,b) {
-						return a[2] - b[2];
-					});
-
-				}
-				groups.push(group);
-				var group = constructGraphGroup(store1.per_day);
-				scene.add(group);
 
 				// var textShapes = THREE.FontUtils.generateShapes( "text", {transparent: false, opacity: 1.0});
 				// var text = new THREE.ShapeGeometry( textShapes );
@@ -205,6 +185,30 @@
 
 
 				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function selectStore(store_selected, month_selected) {
+				var store1 = {
+					all: data_arr.filter(function(entry) { 
+
+					return entry[0] == store_selected && entry[2].getMonth() == month_selected }),
+					per_day: []
+				};
+
+
+				var week_colors = {};
+				for(var i = 1; i < 8; i++) {
+					store1.per_day[i] = store1.all.filter(function(entry) { return entry[1] == i});
+					store1.per_day[i].sort(function(a,b) {
+						return a[2] - b[2];
+					});
+
+				}
+				storeGenerate(400 * (store_selected - 1), store_selected );
+				groups.push(group);
+				var group = constructGraphGroup((store_selected - 1) * 400, store1.per_day);
+				scene.add(group);
 
 			}
 
@@ -287,7 +291,7 @@
 				scene.add( monthGroup );
 			}
 
-			function constructGraphGroup(storelist) {
+			function constructGraphGroup(xOffset, storelist) {
 				var zpos = 0;
 				var group = new THREE.Object3D();
 				for(var j = 0; j < storelist[1].length; j++) {
@@ -315,7 +319,7 @@
 						var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color_for_week } ) );
 						object.date = storelist[i][j][2].formatMMDDYYYY();
 						object.sales = storelist[i][j][3];
-						object.position.x = (i-1) * graph_box_width * 1.5;
+						object.position.x = (i-1) * graph_box_width * 1.5 + xOffset;
 						object.position.y = object_height/2;
 						object.position.z = zpos;
 						group.add(object);
