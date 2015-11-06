@@ -269,6 +269,7 @@
 				camera.position.x += perspective_movement.x_velocity;
 				camera.position.y += perspective_movement.y_velocity;
 				camera.position.z += perspective_movement.z_velocity;
+				camera.rotation.y += perspective_movement.y_rotation;
 				render();
 				stats.update();
 
