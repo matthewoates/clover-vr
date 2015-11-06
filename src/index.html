@@ -207,7 +207,7 @@
 				}
 				groups.push(group);
 				var group = constructGraphGroup((store_selected - 1) * 400, store1.per_day);
-				group.add(storeGenerate(400 * store_selected, store_selected ));
+				group.add(storeGenerate(400 * (store_selected-1), (store_selected-1) ));
 				scene.add(group);
 
 			}
@@ -261,7 +261,13 @@
 
 
 			function storeGenerate(x, store_selected) {
-				var text3d = new THREE.TextGeometry( "Store " + (store_selected+1), {
+				var write = "Store " + (store_selected + 1);
+
+				if (store_selected == -1) {
+					write = "";
+				}
+
+				var text3d = new THREE.TextGeometry( write, {
 					size: 15,
 					height: 10,
 					curveSegments: 2,
@@ -293,7 +299,6 @@
 				var zpos = 0;
 				var group = new THREE.Object3D();
 				for(var j = 0; j < storelist[1].length; j++) {
-					console.log(storelist[j]);
 					var color_for_week;
 
 					for(var i = 1; i < 8; i++) {
