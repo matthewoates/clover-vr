@@ -50,6 +50,7 @@
 		<script src="js/VREffect.js"></script>
 		<script src="js/VRControls.js"></script>
 		<script src="js/stats.min.js"></script>
+		<script src="js/utils/FontUtils.js"></script>
 
 		<script>
 
@@ -99,7 +100,7 @@
 
 				var geometry = new THREE.BoxGeometry( 20, 20, 20 );
 
-				for ( var i = 0; i < 2000; i ++ ) {
+				for ( var i = 0; i < 200; i ++ ) {
 
 					var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: Math.random() * 0xffffff } ) );
 
@@ -201,6 +202,11 @@
 						INTERSECTED = intersects[ 0 ].object;
 						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
 						INTERSECTED.material.emissive.setHex( 0xff0000 );
+
+						var textShapes = THREE.FontUtils.generateShapes(text, options);
+						var text = new THREE.ShapeGeometry( textShapes );
+						var textMesh = new THREE.Mesh( text, new THREE.MeshBasicMaterial( { color: 0x000000 } ) ) ;
+						scene.add(textMesh);
 
 					}
 
