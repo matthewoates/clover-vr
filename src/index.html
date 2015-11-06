@@ -60,6 +60,8 @@
 		<script src="js/leapmotion.js"></script>
 		<script>
 
+			Date.prototype.formatMMDDYYYY = function(){ return (this.getMonth() + 1) + "/" + this.getDate() + "/" + this.getFullYear(); }
+
 			var container, stats;
 			var camera, scene, raycaster, renderer;
 			var vrEffect;
@@ -67,7 +69,7 @@
 
 
 			var cubes = [];
-			var INTERSECTED;
+			var INTERSECTED, intersected_text;
 			var radius = 100, theta = 0;
 			var crosshair;
 
@@ -129,59 +131,43 @@
 
 				var zpos = 0;
 				for(var j = 0; j < store1.per_day[1].length; j++) {
-					var color_for_week = Math.random() * 0xFFFFFF;
+					var color_for_week;
+
 					for(var i = 1; i < 8; i++) {
+						var year = store1.per_day[i][j][2].getFullYear();
+						switch(year) {
+							case 2013:
+								color_for_week = 0x3F51B5;
+								break;
+							case 2014:
+								color_for_week = 0x4CAF50;
+								break;
+							case 2015:
+								color_for_week = 0xFFC107;
+								break;
+							default:
+								color_for_week = 0x9C27B0;
+								break;
+						}
+
 						var object_height = store1.per_day[i][j][3]/50;
 						var geometry = new THREE.BoxGeometry( graph_box_width, object_height, graph_box_length );
 						var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color_for_week } ) );
+						object.date = store1.per_day[i][j][2].formatMMDDYYYY();
+						object.sales = store1.per_day[i][j][3];
 						object.position.x = (i-1) * graph_box_width;
 						object.position.y = object_height/2;
 						object.position.z = zpos;
 						scene.add(object);
 						cubes.push(object);
 					}
-					zpos-= 1.5 * graph_box_length;
+					zpos-= graph_box_length;
 				}
 
 				// var textShapes = THREE.FontUtils.generateShapes( "text", {transparent: false, opacity: 1.0});
 				// var text = new THREE.ShapeGeometry( textShapes );
 				// var textMesh = new THREE.Mesh( text, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) ) ;
 				// scene.add(textMesh);
-
-				// Get text from hash
-				var theText = "Hello three.js! :)";
-				var hash = document.location.hash.substr( 1 );
-				if ( hash.length !== 0 ) {
-					theText = hash;
-				}
-				var text3d = new THREE.TextGeometry( theText, {
-					size: 10,
-					height: 10,
-					curveSegments: 2,
-					font: "helvetiker"
-				});
-
-				text3d.computeBoundingBox();
-				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
-
-				var material = new THREE.MeshFaceMaterial( [
-					new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, overdraw: 0.5 } ),
-					new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
-				] );
-
-				text = new THREE.Mesh( text3d, material );
-
-				text.position.x = centerOffset;
-				text.position.y = 100;
-				text.position.z = -100;
-
-				text.rotation.x = 0;
-				text.rotation.y = Math.PI * 2;
-
-				group = new THREE.Group();
-				group.add( text );
-
-				scene.add( group );
 
 
 				raycaster = new THREE.Raycaster();
@@ -229,6 +215,46 @@
 
 			}
 
+			function textGenerate(x, y, z, theText, theSales) {
+				// Get text from hash
+				// var hash = document.location.hash.substr( 1 );
+				// if ( hash.length !== 0 ) {
+				// 	theText = hash;
+				// }
+				var text3d = new THREE.TextGeometry( theText + ', ' + theSales, {
+					size: 20,
+					height: 10,
+					curveSegments: 2,
+					//weight: "bold",
+					font: "helvetiker"
+				});
+
+				text3d.computeBoundingBox();
+				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+
+				var material = new THREE.MeshFaceMaterial( [
+					new THREE.MeshBasicMaterial( { color: 0x76FF03, overdraw: 0.5 } ),
+					new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
+				] );
+
+				text = new THREE.Mesh( text3d, material );
+
+				text.position.x = x + centerOffset;
+				text.position.y = y;
+				text.position.z = z;
+				text.rotation.y = camera.rotation.y;
+				text.rotation.x = camera.rotation.x;
+				text.rotation.z = camera.rotation.z;
+				// text.rotation.x = 0;
+				// text.rotation.y = 0; //Math.PI * 2;
+
+				group = new THREE.Group();
+				group.add( text );
+
+				scene.add( group );
+				return group;
+			}
+
 			function onWindowResize() {
 
 				camera.aspect = window.innerWidth / window.innerHeight;
@@ -263,11 +289,15 @@
 
 					if ( INTERSECTED != intersects[ 0 ].object ) {
 
-						if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+						if ( INTERSECTED ) {
+								INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+								scene.remove(intersected_text);
+						}
 
 						INTERSECTED = intersects[ 0 ].object;
 						INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
 						INTERSECTED.material.emissive.setHex( 0xff0000 );
+						intersected_text = textGenerate(INTERSECTED.position.x, INTERSECTED.position.y * 2, INTERSECTED.position.z, INTERSECTED.date, INTERSECTED.sales);
 
 						// var canvas = document.getElementById('mycanvas');
 						// var ctx = canvas.getContext('2d');
@@ -276,7 +306,10 @@
 
 				} else {
 
-					if ( INTERSECTED ) INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+					if ( INTERSECTED ) {
+						INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+						scene.remove(intersected_text);
+					}
 
 					INTERSECTED = null;
 
