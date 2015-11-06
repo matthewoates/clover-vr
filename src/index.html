@@ -50,8 +50,9 @@
 		<script src="js/VREffect.js"></script>
 		<script src="js/VRControls.js"></script>
 		<script src="js/stats.min.js"></script>
-		<script src="js/helvetiker_regular.typeface.js"></script>
+		<script src="js/TextGeometry.js"></script>
 		<script src="js/FontUtils.js"></script>
+		<script src="js/helvetiker_regular.typeface.js"></script>
 		<!-- <script src="../data/train.js"></script> -->
 		<script src="js/movement.js"></script>
 		<script>
@@ -123,10 +124,46 @@
 
 				}
 
-				var textShapes = THREE.FontUtils.generateShapes( "text", {transparent: true, opacity: 0.5});
-				var text = new THREE.ShapeGeometry( textShapes );
-				var textMesh = new THREE.Mesh( text, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) ) ;
-				scene.add(textMesh);
+				// var textShapes = THREE.FontUtils.generateShapes( "text", {transparent: false, opacity: 1.0});
+				// var text = new THREE.ShapeGeometry( textShapes );
+				// var textMesh = new THREE.Mesh( text, new THREE.MeshBasicMaterial( { color: 0xff0000 } ) ) ;
+				// scene.add(textMesh);
+
+				// Get text from hash
+				var theText = "Hello three.js! :)";
+				var hash = document.location.hash.substr( 1 );
+				if ( hash.length !== 0 ) {
+					theText = hash;
+				}
+				var text3d = new THREE.TextGeometry( theText, {
+					size: 10,
+					height: 10,
+					curveSegments: 2,
+					font: "helvetiker"
+				});
+
+				text3d.computeBoundingBox();
+				var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+
+				var material = new THREE.MeshFaceMaterial( [
+					new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, overdraw: 0.5 } ),
+					new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
+				] );
+
+				text = new THREE.Mesh( text3d, material );
+
+				text.position.x = centerOffset;
+				text.position.y = 100;
+				text.position.z = -100;
+
+				text.rotation.x = 0;
+				text.rotation.y = Math.PI * 2;
+
+				group = new THREE.Group();
+				group.add( text );
+
+				scene.add( group );
+
 
 				raycaster = new THREE.Raycaster();
 
